@@ -16,10 +16,11 @@ HANDICAP = {
 
 @click.command()
 @click.option('--name', prompt=True, default='Human Player', help='Player name.')
-@click.option('--level', prompt=True, default='medium',
-              help='Challenge: trivial, easy, medium, hard, impossible.')
+@click.option('--level', prompt=True, default='medium', type=click.Choice([
+              'trivial', 'easy', 'medium', 'hard', 'impossible'],
+    case_sensitive=False))
 def cli(name, level):
-    h = HANDICAP['medium']
+    h = HANDICAP[level]
     g = game.Game(h)
     g.play()
 
