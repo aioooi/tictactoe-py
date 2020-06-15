@@ -243,22 +243,27 @@ class Game:
 
     def _empty_corner(self):
         corner = [(0, 0), (0, 2), (2, 0), (2, 2)]
-        empty = np.where(self._board.flatten()[[0, 2, 6, 8]] == self._EMPTY)
-        if len(empty[0]):
-            self._board[corner[np.random.randint(len(empty))]] = self._COMPUTER
+        empty = np.where(self._board.flatten()[[0, 2, 6, 8]] == self._EMPTY)[0]
+        if len(empty):
+            i = np.random.randint(len(empty))
+            self._board[corner[empty[i]]] = self._COMPUTER
             return True
         else:
             return False
 
     def _random_move(self):
-        empty = np.where(self._board == self._EMPTY)
-        if len(empty[0]):
-            i = np.random.randint(len(empty[0]))
-            self._board[empty[0][i], empty[1][i]] = self._COMPUTER
+        empty = np.where(self._board == self._EMPTY)[0]
+        if len(empty):
+            i = np.random.randint(len(empty))
+            self._board[empty[i], empty[i]] = self._COMPUTER
             return True
         else:
             return False
 
 
-g = Game()
-g.play()
+
+
+while True:
+    g = Game()
+    g.play()
+    print("\n\n\nAnother one?")
