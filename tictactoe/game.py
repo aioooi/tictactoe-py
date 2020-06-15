@@ -1,4 +1,5 @@
-
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 import numpy as np
 
@@ -276,12 +277,3 @@ class Game:
             return True
         else:
             return False
-
-
-while True:
-    g = Game(0)
-    g.play()
-    print("\n\n\nAnother, more easy one?")
-    g = Game(100)
-    g.play()
-    print("\n\n\nAnother one?")
