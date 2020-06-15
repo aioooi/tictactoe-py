@@ -20,11 +20,12 @@ class Game:
         self._board = np.zeros(self._SHAPE, dtype=int)
 
         if 0 <= int(handicap) <= self._MAX_HANDICAP:
-            self._handicap = int(handicap) 
+            self._handicap = int(handicap)
         else:
             self._handicap = int(0.5 * self._MAX_HANDICAP)
 
     def __str__(self):
+        """Print current board."""
         number = [
             "\u2070",
             "\u00b9",
@@ -58,6 +59,12 @@ class Game:
         return (s + (t + q) * 2 + t + v).format(*ui)
 
     def play(self, first_move=1):
+        """Play the game.
+
+        first_move: Who begins the game?
+            1: human player
+            -1: computer
+        """
         if first_move != 1:
             turn = self._COMPUTER
         turn = self._HUMAN
@@ -100,11 +107,9 @@ class Game:
                 print("That's a draw!")
                 break
 
-    """
-    Human makes a move
-    """
 
     def enter_move(self, move=(0, 0)):
+        """Human makes a move."""
         assert(len(move) == 2)
 
         if any([_ < 0 or _ > 2 for _ in move]):
@@ -115,11 +120,8 @@ class Game:
             else:
                 self._board[move] = self._HUMAN
 
-    """
-    Computer makes a move
-    """
-
     def make_move(self):
+        """Computer makes a move."""
         h = np.random.randint(self._MAX_HANDICAP)
         if h < self._handicap:
             return self._random_move()
@@ -135,16 +137,11 @@ class Game:
         ]
 
         while len(action):
-            a = action.pop(0)
-            print(a)
-            if a():
+            if action.pop(0)():
                 break
 
-    """
-    Check whether triplet with l1 norm equal to value exists
-    """
-
     def _check_triplet(self, value):
+        """Check whether triplet with l1 norm equal to value exists."""
         rows = np.dot(self._board, np.ones(3))
         cols = np.dot(np.ones(3), self._board)
         diag = self._board.trace()
@@ -154,6 +151,7 @@ class Game:
             np.concatenate((rows, cols, [diag], [sdiag])) == value)[0]
 
     def _win(self):
+        """Check for row to complete."""
         check = self._check_triplet(2 * self._COMPUTER)
 
         if len(check):
@@ -181,6 +179,7 @@ class Game:
             return False
 
     def _avoid_defeat(self):
+        """Check for opponent' rows that can be completed if not prohibited."""
         check = self._check_triplet(2 * self._HUMAN)
 
         if len(check):
@@ -214,6 +213,7 @@ class Game:
             return False
 
     def _matchball(self):
+        """Create two in a row such that remaining square is empty."""
         rows = np.where(np.dot(self._board, np.ones(3)) == self._COMPUTER)[0]
         np.random.shuffle(rows)
         for i in rows:
@@ -235,6 +235,7 @@ class Game:
         return False
 
     def _center(self):
+        """Play center court."""
         if self._board[1, 1] == self._EMPTY:
             self._board[1, 1] = self._COMPUTER
             return True
@@ -242,6 +243,7 @@ class Game:
             return False
 
     def _opposite_corner(self):
+        """Occupy (an) opposite corner."""
         corner = [(0, 0), (0, 2), (2, 0), (2, 2)]
 
         if self._board[corner[0]] + self._board[corner[3]] == self._HUMAN:
@@ -260,6 +262,7 @@ class Game:
             return False
 
     def _empty_corner(self):
+        """Play an empty corner."""
         corner = [(0, 0), (0, 2), (2, 0), (2, 2)]
         empty = np.where(self._board.flatten()[[0, 2, 6, 8]] == self._EMPTY)[0]
         if len(empty):
@@ -270,6 +273,7 @@ class Game:
             return False
 
     def _random_move(self):
+        """Play an empty field."""
         empty = np.where(self._board == self._EMPTY)
         if len(empty[0]):
             i = np.random.randint(len(empty[0]))
