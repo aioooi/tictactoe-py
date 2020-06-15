@@ -12,8 +12,16 @@ class Game:
     # board shape
     _SHAPE = (3, 3)
 
-    def __init__(self):
+    # handicap
+    _MAX_HANDICAP = 100
+
+    def __init__(self, handicap=0):
         self._board = np.zeros(self._SHAPE, dtype=int)
+
+        if 0 <= int(handicap) <= self._MAX_HANDICAP:
+            self._handicap = int(handicap) 
+        else:
+            self._handicap = int(0.5 * self._MAX_HANDICAP)
 
     def __str__(self):
         number = [
@@ -72,7 +80,7 @@ class Game:
 
                 self.enter_move((int(f / 3), f % 3))
                 turn = self._COMPUTER
-            
+
             print(self)
 
             check = [
@@ -90,8 +98,6 @@ class Game:
             if check[2] and not (check[0] or check[1]):
                 print("That's a draw!")
                 break
-                
-
 
     """
     Human makes a move
@@ -113,13 +119,9 @@ class Game:
     """
 
     def make_move(self):
-        # TODO checks etc.
-
-        # random move
-        # TODO connect with handicap
-        # if np.any(self._board == self._EMPTY):
-        #     # TODO return value?
-        #     return self._random_move()
+        h = np.random.randint(self._MAX_HANDICAP)
+        if h < self._handicap:
+            return self._random_move()
 
         action = [
             self._win,
@@ -136,9 +138,6 @@ class Game:
             print(a)
             if a():
                 break
-
-        # TODO return value?
-        return
 
     """
     Check whether triplet with l1 norm equal to value exists
@@ -160,11 +159,11 @@ class Game:
             i = np.random.randint(len(check))
             c = check[i]
 
-            if c in range(3):
+            if 0 <= c < 3:
                 # row
                 x = np.where(self._board[c, :] == self._EMPTY)[0][0]
                 self._board[c, x] = self._COMPUTER
-            elif c in range(3, 6):
+            elif 3 <= c < 6:
                 # column
                 x = np.where(self._board[:, c - 3] == self._EMPTY)[0][0]
                 self._board[x, c - 3] = self._COMPUTER
@@ -187,11 +186,11 @@ class Game:
             i = np.random.randint(len(check))
             c = check[i]
 
-            if c in range(3):
+            if 0 <= c < 3:
                 # row
                 x = np.where(self._board[c, :] == self._EMPTY)[0][0]
                 self._board[c, x] = self._COMPUTER
-            elif c in range(3, 6):
+            elif 3 <= c < 6:
                 # column
                 x = np.where(self._board[:, c - 3] == self._EMPTY)[0][0]
                 self._board[x, c - 3] = self._COMPUTER
@@ -214,6 +213,24 @@ class Game:
             return False
 
     def _matchball(self):
+        rows = np.where(np.dot(self._board, np.ones(3)) == self._COMPUTER)[0]
+        np.random.shuffle(rows)
+        for i in rows:
+            empty = np.where(self._board[i, :] == self._EMPTY)[0]
+            if len(empty):
+                j = empty[np.random.randint(len(empty))]
+                self._board[i, j] = self._COMPUTER
+                return True
+
+        cols = np.where(np.dot(np.ones(3), self._board) == self._COMPUTER)[0]
+        np.random.shuffle(cols)
+        for j in cols:
+            empty = np.where(self._board[:, j] == self._EMPTY)[0]
+            if len(empty):
+                i = empty[np.random.randint(len(empty))]
+                self._board[i, j] = self._COMPUTER
+                return True
+
         return False
 
     def _center(self):
@@ -252,18 +269,19 @@ class Game:
             return False
 
     def _random_move(self):
-        empty = np.where(self._board == self._EMPTY)[0]
-        if len(empty):
-            i = np.random.randint(len(empty))
-            self._board[empty[i], empty[i]] = self._COMPUTER
+        empty = np.where(self._board == self._EMPTY)
+        if len(empty[0]):
+            i = np.random.randint(len(empty[0]))
+            self._board[empty[0][i], empty[1][i]] = self._COMPUTER
             return True
         else:
             return False
 
 
-
-
 while True:
-    g = Game()
+    g = Game(0)
+    g.play()
+    print("\n\n\nAnother, more easy one?")
+    g = Game(100)
     g.play()
     print("\n\n\nAnother one?")
