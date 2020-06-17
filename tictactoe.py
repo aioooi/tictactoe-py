@@ -55,9 +55,9 @@ def cli(name, level):
 
         if click.confirm('Play another one?', default=True):
             if computer_moves_first:
-                print('As you won, I will begin…\n\n')
+                print('I will begin…\n\n')
             else:
-                print('Having lost, you may start now…\n\n')
+                print('You may start now…\n\n')
             continue
         else:
             break
