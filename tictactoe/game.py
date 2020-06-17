@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import click
 import numpy as np
 
 
@@ -58,6 +59,8 @@ class Game:
 
         return (s + (t + q) * 2 + t + v).format(*ui)
 
+    # def input_next_field
+
     def play(self, first_move=1):
         """Play the game.
 
@@ -73,23 +76,20 @@ class Game:
 
         while np.any(self._board == self._EMPTY):
             if turn == self._COMPUTER:
-                self.make_move()
+                self._computer_move()
                 turn = self._HUMAN
             else:
                 numpad = [7, 8, 9, 4, 5, 6, 1, 2, 3]
                 empty_field_labels = [str(numpad.index(e + 1) + 1)
                                       for e in np.where(self._board.flatten() == self._EMPTY)[0]]
 
-                f = numpad.index(int(input("Choose field {}: ".format(" ".join(
-                    empty_field_labels)))))
-                # if f not in empty:
-                #     # TODO
-                #     raise ValueError
+                f = numpad.index(
+                    int(click.prompt("It's your turn! Choose a field", type=click.Choice(empty_field_labels))))
 
-                self.enter_move((int(f / 3), f % 3))
+                self._human_move((int(f / 3), f % 3))
                 turn = self._COMPUTER
 
-            print(self)
+            print(self, "\n")
 
             check = [
                 bool(len(self._check_triplet(3 * self._COMPUTER))),
@@ -107,8 +107,7 @@ class Game:
                 print("That's a draw!")
                 break
 
-
-    def enter_move(self, move=(0, 0)):
+    def _human_move(self, move=(0, 0)):
         """Human makes a move."""
         assert(len(move) == 2)
 
@@ -120,7 +119,7 @@ class Game:
             else:
                 self._board[move] = self._HUMAN
 
-    def make_move(self):
+    def _computer_move(self):
         """Computer makes a move."""
         h = np.random.randint(self._MAX_HANDICAP)
         if h < self._handicap:
