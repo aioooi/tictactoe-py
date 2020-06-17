@@ -84,11 +84,12 @@ class Game:
                 turn = self._HUMAN
             else:
                 numpad = [7, 8, 9, 4, 5, 6, 1, 2, 3]
-                empty_field_labels = [str(numpad.index(e + 1) + 1)
-                                      for e in np.where(self._board.flatten() == self._EMPTY)[0]]
+                empty_field_labels = [str(numpad.index(e + 1) + 1) 
+                    for e in np.where(self._board.flatten() == self._EMPTY)[0]]
 
                 f = numpad.index(
-                    int(click.prompt("It's your turn! Choose a field", type=click.Choice(empty_field_labels))))
+                    int(click.prompt("It's your turn! Choose a field",
+                                     type=click.Choice(empty_field_labels))))
 
                 self._human_move((int(f / 3), f % 3))
                 turn = self._COMPUTER
