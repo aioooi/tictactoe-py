@@ -61,21 +61,25 @@ class Game:
 
     # def input_next_field
 
-    def play(self, first_move=1):
+    def play(self, computer_moves_first=False):
         """Play the game.
 
-        first_move: Who begins the game?
-            1: human player
-            -1: computer
+        Returns 
+            self._COMPUTER: computer wins
+            self._HUMAN: human wins
+            0:  draw
         """
-        if first_move != 1:
+        if computer_moves_first:
             turn = self._COMPUTER
-        turn = self._HUMAN
+        else:
+            turn = self._HUMAN
 
-        print(self)
+        if not computer_moves_first:
+            print(self, '\n')
 
         while np.any(self._board == self._EMPTY):
             if turn == self._COMPUTER:
+                print('My move:')
                 self._computer_move()
                 turn = self._HUMAN
             else:
@@ -89,7 +93,7 @@ class Game:
                 self._human_move((int(f / 3), f % 3))
                 turn = self._COMPUTER
 
-            print(self, "\n")
+            print(self, '\n')
 
             check = [
                 bool(len(self._check_triplet(3 * self._COMPUTER))),
@@ -98,24 +102,21 @@ class Game:
             ]
 
             if check[0]:
-                print("I win!")
-                break
+                return self._COMPUTER
             if check[1]:
-                print("You win!")
-                break
+                return self._HUMAN
             if check[2] and not (check[0] or check[1]):
-                print("That's a draw!")
-                break
+                return 0
 
     def _human_move(self, move=(0, 0)):
         """Human makes a move."""
         assert(len(move) == 2)
 
         if any([_ < 0 or _ > 2 for _ in move]):
-            raise Exception("invalid move: position does not exist")
+            raise Exception('invalid move: position does not exist')
         else:
             if self._board[move] != self._EMPTY:
-                raise Exception("invalid move: board position not empty")
+                raise Exception('invalid move: board position not empty')
             else:
                 self._board[move] = self._HUMAN
 
