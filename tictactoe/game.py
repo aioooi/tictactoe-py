@@ -180,7 +180,7 @@ class Game:
             return False
 
     def _avoid_defeat(self):
-        """Check for opponent' rows that can be completed if not prohibited."""
+        """Check for (and destroy) opponent's matchballs."""
         check = self._check_triplet(2 * self._HUMAN)
 
         if len(check):
@@ -274,7 +274,7 @@ class Game:
             return False
 
     def _random_move(self):
-        """Play an empty field."""
+        """Play an empty sqaure."""
         empty = np.where(self._board == self._EMPTY)
         if len(empty[0]):
             i = np.random.randint(len(empty[0]))
